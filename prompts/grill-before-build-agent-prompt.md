@@ -88,32 +88,40 @@ decisions locked · open questions · re-grill trigger (what would invalidate th
 
 ### 3. Mock / wireframe phase (UI features) — MANDATORY UX READ FIRST
 
+**Paper / Pencil / HTML all follow the same design VP as build.** Load the design skill stack before any mock surface.
+
+**Design skill stack (MANDATORY before any mock):**
+`build-screen` → `loudecho-brand` → `loudecho-component-library` → `impeccable` → `frontend-design`
+
 **BEFORE any wireframe or mock screen**, read the target repo's existing UX so wireframes **extend IA, not invent unrelated UI**:
 
-| Repo | Read before wireframe |
-|------|----------------------|
-| **dara-front** | `src/components/SimulationMode/` (InputsPanel, SimulationModeCard, StatusPanel), campaign tab patterns in `src/app/campaigns/[campaignId]/page.tsx`, `SimulatedGenerationsTable`, shadcn/ui usage, design tokens |
-| **echo-studio** | `studio/components/shell/TopBar.tsx`, Library-adjacent routes (`/review`, `/campaigns`, `/brand`), `studio/components/chat/ChatPane.tsx`, `studio/app/globals.css` tokens |
-| **loud-echo-site** | Load `loudecho-brand` + `frontend-design` skills; read existing page patterns |
+| Repo | Read before wireframe | Storybook / catalog |
+|------|----------------------|---------------------|
+| **dara-front** | `SimulationMode/InputsPanel`, `SimulationModeCard`, `LineTabs`, campaign page tabs, `SimulatedGenerationsTable` | `npm run storybook` → :6006; routing table in `loudecho-brain/.agent/skills/loudecho-component-library/components.md` |
+| **echo-studio** | `TopBar`, `ChatPane`, `globals.css` tokens, `/review` `/campaigns` `/brand` | Read `studio/app/globals.css` + shell components |
+| **loud-echo-site** | `loudecho-brand` + `frontend-design`; existing page patterns | N/A |
 
-**Design skill stack (load before JSX or wireframe HTML):**
-`build-screen` → `loudecho-brand` → `loudecho-component-library` → `impeccable` → `frontend-design`
+**Mock tool priority:**
+1. **Paper MCP** (preferred) — product-faithful mocks using real tokens from `loudecho-brand/DESIGN.md` or repo CSS; reference Storybook story names from `components.md`
+2. **Pencil MCP** — if available
+3. **HTML + Chromium PNG** — only if Paper/Pencil unavailable; MUST use repo Tailwind classes/tokens from codebase read, NOT generic gray monospace wireframes
+
+**Paper-specific rules:**
+- Call `get_guide({ topic: "paper-mcp-instructions" })` once per session before first `write_html`
+- Call `get_font_family_info` before typography; use fonts already in the product
+- Every screen must name which **existing components** it reuses vs net-new (`LineTabs`, `Select`, `Sheet`, `TopBar`, etc.)
+- Screenshot each artboard → `case-study/screenshots/`
+- `03-mockup-notes.md` must include **Design fidelity checklist** (match / extension / gap per chrome element)
 
 **Wireframe rules:**
 - Wireframes must **extend existing information architecture** — new nav items, tabs, or surfaces slot into real chrome
-- Reference **real component names** in mockup notes: `Sheet`, `Tabs`, `Select`, `InputsPanel`, `TopBar`, `ChatPane`, `Badge`, `Table`, etc.
-- Screenshots must look like they **belong in the product** — use repo CSS tokens/patterns from the codebase read, not generic gray boxes, when Pencil/Paper unavailable
-- If **Pencil MCP** available: mock in Pencil first
-- If Pencil unavailable: **Paper MCP** next
-- If both unavailable: HTML wireframe using repo tokens/patterns from codebase read → headless Chromium PNG
+- Reference **real component names** in mockup notes
+- Screenshots must look like they **belong in the product**
 - Layout broken → back to step 1 (re-grill), not pixel-tweak in chat
 
-→ `case-study/03-mockup-notes.md` + `.pen` or HTML source + screenshots
+**HARD GATE:** Low-fi gray wireframes alone do NOT pass layout gate for dara-front / echo-studio UI. "Apply brand at build time" is NOT valid in this workflow.
 
-**Wireframe fidelity self-check (document in mockup notes):**
-- Nav/tab placement matches real product
-- Isolation banners, badges, and labeling match existing patterns where applicable
-- Call out **gaps** honestly (what wireframe simplifies vs what build must implement)
+→ `case-study/03-mockup-notes.md` + source (Paper file / HTML) + screenshots
 
 ### 4. Write PRD (after flows + mock settled)
 - `prd.md` + `prd-resume.md` (session-workflow format)

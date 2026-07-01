@@ -23,6 +23,17 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Pencil MCP was unavailable in both runs; HTML wireframe fallback used
 - Build, design review, and Linear proof-of-work steps not yet executed
 
+## [0.3.0] — 2026-07-01
+
+### Added
+
+- **main README** — `Setup & installation` section: clone repos, Cursor skills/MCP, Storybook, Paper design VP, copy-paste launch, Claude Code + Claude Design path, second-machine checklist
+- **prompts/grill-before-build-agent-prompt.md** — Paper-first mock phase; mandatory design skill stack; Storybook/`components.md` references; hard gate against gray wireframes
+
+### Changed
+
+- Branch table on main README includes `ENG1410-Paper` and `ENG1409-Pencil` arms
+
 ## [0.2.1] — 2026-07-01
 
 ### Removed

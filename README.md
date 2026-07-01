@@ -6,6 +6,181 @@ This repo tests whether an agent workflow (grill → flows → mock → PRD) pro
 
 ---
 
+## Setup & installation
+
+Use this section to reproduce the workflow on a **new machine** (Cursor, Claude Code, or both). Everything you need to copy-paste lives in this repo or links below.
+
+### 1. Clone repos
+
+```bash
+# Product research experiments (this repo)
+git clone https://github.com/gavrizz/prd-tests.git
+cd prd-tests
+
+# LoudEcho monorepo (skills, brain, target apps) — required for real runs
+git clone git@github.com:sepana-io/loudecho.git   # or your fork/path
+cd loudecho
+# Ensure sub-repos exist: loudecho-brain, dara-front, echo-studio, etc.
+```
+
+| Repo | Why you need it |
+|------|-----------------|
+| **prd-tests** | Case study critiques per branch; agent prompt copy |
+| **loudecho** workspace | Skills, VP rules, target codebases, task artifacts |
+| **loudecho-brain** | Source of truth for skills (`grill-me-product`, design stack) |
+
+### 2. Cursor — skills & rules
+
+Skills are **not** in prd-tests. They live in the LoudEcho workspace.
+
+```bash
+cd loudecho
+
+# Workspace skills (symlink or copy from brain)
+# Typical layout:
+#   .cursor/skills/grill-me-product/
+#   .cursor/skills/build-screen/
+#   .cursor/skills/loudecho-brand/
+#   .cursor/skills/loudecho-component-library/
+#   .cursor/skills/impeccable/
+#   .cursor/skills/frontend-design/
+#   .cursor/skills/agentic-discipline/
+```
+
+**Brain paths (canonical):**
+
+| Skill | Path |
+|-------|------|
+| Grill | `loudecho-brain/.agent/skills/grill-me-product/SKILL.md` |
+| Design stack | `build-screen` → `loudecho-brand` → `loudecho-component-library` → `impeccable` → `frontend-design` |
+| Safety | `loudecho-brain/.agent/skills/agentic-discipline/SKILL.md` |
+| PRD format | `loudecho-brain/.agent/skills/session-workflow/SKILL.md` |
+
+Cursor reads workspace rules from `loudecho/.cursor/rules/` and `AGENTS.md`. Open the **loudecho** folder as the Cursor workspace root (not prd-tests alone).
+
+### 3. Cursor — MCP servers
+
+Copy or merge `loudecho/.cursor/mcp.json`:
+
+| Server | Purpose | Setup |
+|--------|---------|--------|
+| **Linear** | Fetch tickets | Cursor plugin or user MCP — authenticate once per machine |
+| **Paper** | Product-faithful mocks | Install [Paper Desktop](https://paper.design); open a file; MCP at `http://127.0.0.1:29979/mcp` |
+| **Pencil** | Optional vector mocks | Install Pencil.app; stdio MCP in `mcp.json` |
+| **GitHub** | Push branches, PRs | Authenticate via plugin |
+
+Reload Cursor after MCP changes: **Cmd+Shift+P → Developer: Reload Window**.
+
+### 4. Storybook (dara-front component reference)
+
+Mocks should match **real components**, not generic gray boxes. dara-front Storybook is the visual catalog.
+
+```bash
+cd loudecho/dara-front
+npm install
+npm run storybook    # http://localhost:6006
+```
+
+**Before mocking dara-front UI**, the agent must read:
+
+| Reference | Path / Storybook |
+|-----------|------------------|
+| Component routing table | `loudecho-brain/.agent/skills/loudecho-component-library/components.md` |
+| Campaign tabs | `src/components/LineTabs.tsx` — Storybook: `Custom Components/Layout/LineTabs` |
+| Simulation inputs | `src/components/SimulationMode/InputsPanel.tsx` |
+| Simulation card | `src/components/SimulationMode/SimulationModeCard.tsx` |
+| Amber isolation banner | `src/components/Overview.js` (simulated-data banner) |
+| Design tokens | `loudecho-brain/.agent/skills/loudecho-brand/DESIGN.md` |
+
+**echo-studio:** read `studio/app/globals.css`, `studio/components/shell/TopBar.tsx`, existing routes (`/review`, `/campaigns`, `/brand`).
+
+### 5. Paper mocks — same design VP as build
+
+Paper is **not** a freeform wireframe tool in this workflow. It follows the **same design ops as implementation**:
+
+1. Load full design skill stack (`build-screen` → … → `frontend-design`)
+2. Read target repo UX + `components.md` + Storybook paths above
+3. Use **real token values** (colors, type, spacing) from `loudecho-brand/DESIGN.md` or repo `globals.css`
+4. Name **real components** in mockup notes (`LineTabs`, `Select`, `Sheet`, `SimulationModeCard`, etc.)
+5. Screenshot via Paper MCP → `case-study/screenshots/`
+6. Document fidelity checklist in `03-mockup-notes.md` (match / extension / gap per element)
+
+**Low-fi gray HTML wireframes are not sufficient** for PRD approval on dara-front / echo-studio UI features.
+
+Paper plugin: install `paper-desktop` Cursor plugin if not present. Ensure Paper Desktop is running with a file open before the agent calls Paper MCP.
+
+### 6. Launch a case study (Cursor) — copy/paste
+
+1. Open **loudecho** workspace in Cursor (fresh agent chat).
+2. Open [`prompts/grill-before-build-agent-prompt.md`](prompts/grill-before-build-agent-prompt.md).
+3. Copy the **fenced prompt block** (between the triple backticks).
+4. Change one line: `TICKET: ENG-____` (e.g. `ENG-1410` or `ENG-1409`).
+5. Paste into a **new agent** and send.
+
+**Minimal Slack message to yourself/teammate:**
+
+```
+Run grill-before-build:
+1. Clone loudecho + prd-tests
+2. Open loudecho in Cursor, new agent
+3. Paste prompt from https://github.com/gavrizz/prd-tests/blob/main/prompts/grill-before-build-agent-prompt.md
+4. Set TICKET: ENG-XXXX
+5. Paper Desktop open; Storybook optional at :6006 for dara-front
+```
+
+**After the run publishes a critique:**
+
+```bash
+cd prd-tests
+git checkout -b ENGxxxx-YourVariant
+# Copy artifacts + write README case study (see ENG1410-Control for format)
+git push -u origin ENGxxxx-YourVariant
+```
+
+### 7. Claude Code + Claude Design (alternative path)
+
+Anthropic’s **Claude Design** (beta) is a separate surface for on-brand visual work, synced with **Claude Code** for implementation. Useful if you prefer browser/desktop design canvas over Paper-in-Cursor.
+
+| Step | Where | Action |
+|------|--------|--------|
+| Design | [claude.ai/design](https://claude.ai/design) or Claude **desktop app sidebar** | Create mockups, decks, prototypes |
+| Import design system | Claude Design settings | Connect **GitHub repo** (loudecho / dara-front) so Claude uses your components & tokens |
+| Sync from code | Claude Code terminal | `/design-sync` — pull design system from codebase into Claude Design |
+| Start from code | Claude Code | `/design` — create/edit design projects from terminal |
+| Handoff to build | Claude Design → Export | **Handoff to Claude Code** — bundle includes tokens, layout intent, component structure |
+| Build | Claude Code in `dara-front` or `echo-studio` | “Build this handoff bundle using Next.js + our shadcn components” |
+
+**LoudEcho-specific tips:**
+
+- Import **dara-front** (or echo-studio) as the design-system source in Claude Design so mocks stay on-brand.
+- Point Claude at `loudecho-brain/.agent/skills/loudecho-brand/DESIGN.md` and `components.md` in the handoff brief.
+- After Claude Code builds, push to GitHub → normal LoudEcho PR + design-reviewer gate still applies.
+
+Claude Design shares usage limits with Claude Code (Pro/Max/Team). Enterprise may need admin enable.
+
+### 8. Second machine checklist
+
+- [ ] Clone `loudecho` + `prd-tests`
+- [ ] Cursor: same account (Settings Sync optional for user rules)
+- [ ] Symlink/copy skills from `loudecho-brain` → `.cursor/skills/`
+- [ ] Copy `loudecho/.cursor/mcp.json`; re-auth Linear + GitHub
+- [ ] Install Paper Desktop + Pencil (optional)
+- [ ] `dara-front`: `npm install` + `npm run storybook` when mocking dashboard UI
+- [ ] Paste agent prompt from this repo; set `TICKET`
+- [ ] Publish case study branch to `gavrizz/prd-tests` when done
+
+### 9. Quick links
+
+| Resource | URL |
+|----------|-----|
+| Agent prompt (copy source) | [`prompts/grill-before-build-agent-prompt.md`](prompts/grill-before-build-agent-prompt.md) |
+| Control case study (1410) | [`ENG1410-Control`](tree/ENG1410-Control) |
+| Control case study (1409) | [`ENG1409-Control`](tree/ENG1409-Control) |
+| Paper arm example (1410) | [`ENG1410-Paper`](tree/ENG1410-Paper) |
+| Monorepo control report | LoudEcho `docs/case-studies/grill-before-build-control-arm-report.md` |
+
+---
+
 ## How to read a case study
 
 Each branch README follows a narrative case-study structure. A lay product person should be able to read one branch top-to-bottom and understand **what was tested, what got locked, and whether they'd green-light build**.
@@ -80,8 +255,10 @@ Agent prompt: [`prompts/grill-before-build-agent-prompt.md`](prompts/grill-befor
 
 | Branch | Ticket | Variant | Status |
 |--------|--------|---------|--------|
-| [`ENG1410-Control`](tree/ENG1410-Control) | ENG-1410 Creative Library | Control arm | PLANNING complete |
-| [`ENG1409-Control`](tree/ENG1409-Control) | ENG-1409 Optimization Simulation | Control arm | PLANNING complete |
+| [`ENG1410-Control`](tree/ENG1410-Control) | ENG-1410 Creative Library | Control (HTML wireframe) | PLANNING complete |
+| [`ENG1410-Paper`](tree/ENG1410-Paper) | ENG-1410 Creative Library | Paper (design tokens) | PLANNING complete |
+| [`ENG1409-Control`](tree/ENG1409-Control) | ENG-1409 Optimization Simulation | Control (HTML wireframe) | PLANNING complete |
+| [`ENG1409-Pencil`](tree/ENG1409-Pencil) | ENG-1409 Optimization Simulation | Pencil arm | See branch |
 
 ---
 

@@ -1,185 +1,318 @@
-# PM Critique · ENG-1410-Control
+# Case Study · ENG-1410 — Ad Creative Library & Concept Generation
 
-**Ticket:** [ENG-1410](https://linear.app/teza/issue/ENG-1410) — Ad Creative Library & Concept Generation  
-**Repo:** echo-studio · **Source branch:** `gavri/ENG-1410-creative-library`  
-**Workflow variant:** Control arm — standard grill-before-build  
-**Audit date:** 2026-07-01  
-**Phase:** Planning only (grill → flows → mock → PRD). **No build.**
-
-> This document critiques **agent output quality**, not whether a Creative Library is a good product bet.
-
----
-
-## Executive verdict
-
-**Approve PRD with conditions.** The agent produced a buildable, scope-honest PRD with strong traceability from grill decisions to acceptance criteria. I would green-light build **after** resolving three open questions — and I'd insist on **P1 (gallery) first**, then glue to existing concept/chat/variant machinery.
-
-| Dimension | Rating | One-liner |
-|-----------|--------|-----------|
-| Problem clarity | ✅ Strong | Grounded in codebase exploration before grilling |
-| Scope discipline | ✅ Good | Honest deferrals; ticket gap on version history called out |
-| Buildability | ✅ High | Reuse-heavy; SeedProvider de-risks demo path |
-| UX clarity | ✅ Strong | Flows + mocks align; layout gate passed |
-| Process friction | ⚠️ Medium | Pencil unavailable; grilled "all" scope still yields a large PRD |
-
-**Build readiness:** Yes, with P1-first chop and PRD approval on open questions.
+| Field | Value |
+|-------|-------|
+| **Linear ticket** | [ENG-1410](https://linear.app/teza/issue/ENG-1410) — Ad Creative Library & Concept Generation |
+| **Target repo** | echo-studio (Creative Intelligence Engine) |
+| **Source branch** | `gavri/ENG-1410-creative-library` |
+| **Experiment branch** | `ENG1410-Control` |
+| **Workflow** | Grill-before-build (control arm) |
+| **Date** | 2026-07-01 |
+| **Status** | **PLANNING** — grill → flows → mock → PRD complete; build not started |
 
 ---
 
-## Workflow under test
+## Executive summary
 
-| Step | Tool / skill | Outcome |
-|------|--------------|---------|
-| Context | Linear + codebase explore | Mapped existing concept/chat/variant machinery |
-| Grill | `grill-me-product` style, 9 Q&A | Decisions D1–D9 locked |
-| Flows | Mermaid + interaction matrix | Happy path + curation sub-flow + 5 layout decisions |
-| Mock | HTML → Chromium PNG (Pencil N/A) | 3 screens + key states |
-| PRD | Shape Up + `prd-resume.md` | 10 ACs mapped to D1–D9 |
-
-**What was NOT run:** build, design-review gate, Linear proof-of-work post.
+We ran the grill-before-build workflow against ENG-1410 to see whether an agent could turn a large, multi-surface Linear ticket into a build-ready PRD **before** any code was written. The session produced nine locked product decisions (D1–D9), two Mermaid flow diagrams, three wireframe screens, and a ten-criterion PRD resume — all traceable back to a single grill log. The agent's strongest move was reading echo-studio first and reframing the ticket as "Library + glue" atop existing concept, chat, and variant machinery. The weakest move was locking "grill all four stacked features" (D1), which inflated scope despite MVP stop rules. **Verdict:** the workflow added genuine clarity and is build-ready **if** we chop P1 (gallery) first and accept honest deferrals on version history.
 
 ---
 
-## Output inventory
+## The bet we were testing
 
-| Artifact | Path on this branch |
-|----------|---------------------|
-| Grill log | [`artifacts/grill-log.md`](artifacts/grill-log.md) |
-| Flows & interactions | [`artifacts/flows.md`](artifacts/flows.md) |
-| Mockup notes | [`artifacts/mockup-notes.md`](artifacts/mockup-notes.md) |
-| PRD resume | [`artifacts/prd-resume.md`](artifacts/prd-resume.md) |
-| Screenshots | [`artifacts/screenshots/`](artifacts/screenshots/) |
+ENG-1410 asks for an **Ad Creative Library**: ingest proven ads, browse them, adapt a selected concept to a brand's DNA, refine it in chat, and hand it to variant generation. That sounds like four features in one ticket. The experiment tested whether grill-before-build could:
 
-Full PRD (`prd.md`, ~long form) remains in the LoudEcho monorepo task dir — not duplicated here.
+1. **Decompose** the ticket without losing the end-to-end story
+2. **Ground decisions** in what echo-studio already has (concept_executor, ChatPane, surgical_edit, load_brand)
+3. **Produce wireframes** that extend echo-studio's IA rather than inventing a parallel product
+4. **Write a PRD** whose acceptance criteria map 1:1 to locked grill decisions
+
+We did **not** test whether a Creative Library is good business — only whether the agent workflow produces artifacts a senior PM would trust before green-lighting build.
 
 ---
 
-## Critique by artifact type
+## Session narrative — pivotal Q&A moments
 
-### Grill Q&A (D1–D9)
+The grill log ([`artifacts/grill-log.md`](artifacts/grill-log.md)) records one question at a time, each with a recommended answer the operator could accept with "yes." Three exchanges mattered most because they **reframed the entire build**.
 
-The grill log is the strongest artifact in this run. The agent:
+### Moment 1 — Scope chop before scope lock (Q1 + codebase read)
 
-- **Chopped the ticket** into P1–P4 before asking scope questions — good discipline
-- **Read the codebase first** (concept_executor, ChatPane, surgical_edit, load_brand) and reframed net-new work as "Library + glue"
-- **Locked 9 decisions** with recommended answers the PM could accept with "yes"
+The agent opened by splitting ENG-1410 into four pieces:
 
-**Standout decisions:**
+| Piece | What | Depends on |
+|-------|------|------------|
+| P1 | Creative Library (ingest, gallery, curation) | — |
+| P2 | Concept generation from reference | P1 |
+| P3 | Refinement chat + version history | P2 |
+| P4 | Variant handoff | P2/P3 |
 
-| ID | Decision | PM take |
-|----|----------|---------|
-| D2 | Reuse existing machinery | Correct — avoids rebuilding concept/chat/variant |
-| D3 | CreativeProvider + SeedProvider | Smart de-risk; Foreplay flagged off |
-| D7 | Defer version history | Honest, but **explicit ticket gap** — must stay in PRD non-goals |
-| D9 | Handoff → `/review` via surgical_edit | Preserves lineage via parent_concept_id |
+**Recommended:** grill P1 only. **Operator answer:** "all" — grill the full flow end to end. → **D1 locked.**
 
-**Weakness:** D1 locked "grill all P1–P4" which inflated grill load. MVP stop rules helped, but the resulting PRD is still medium–large. Next run: grill P1 only unless PM explicitly wants full-stack spec.
+This was a fork in the road. Locking "all" meant the PRD would cover P1–P4 even though build might still chop. The agent compensated by reading the codebase **before** grilling P2–P4 and discovering that P2–P4 largely **already exist**.
 
-### Flows & diagrams
+### Moment 2 — The reframe that saved the session (Q2)
 
-The flows doc (`artifacts/flows.md`) is logic-only — no pixel debate. Strengths:
+After mapping `concept_from_brief`, `ChatPane`, `surgical_edit`, and `load_brand()`, the agent asked:
 
-- End-to-end Mermaid with error/empty branches (no brand, adaptation error, empty results)
-- Curation sub-flow for Save/Hide (D8)
-- **5 interaction decisions** with 2–3 options each and explicit recommendations (gallery cards, filters, workspace layout, refinement, handoff)
+> **Recommended:** Treat P2–P4 as **reuse/wire-up** of existing machinery. Net-new = Library + glue.
 
-**Gap:** No sequence diagram for the Generate Variants handoff (campaign/session creation). Minor — D9 text covers it.
+**Operator:** Yes. → **D2 locked.**
 
-### Wireframes & mocks
+This is the session's pivotal decision. Without D2, the PRD would have specified rebuilding concept generation, chat, and variant UI — weeks of redundant work. With D2, net-new scope collapsed to: (1) Foreplay/Seed ingest + normalized model, (2) gallery UI, (3) wiring library selections into existing engines. Every subsequent decision (D4 workspace layout, D6 auto-adapt, D9 handoff to `/review`) follows from D2.
 
-Pencil MCP was **unavailable**. Agent fell back to HTML wireframes → headless Chromium PNGs. Acceptable for layout gate; not ideal for design-system fidelity.
+### Moment 3 — Honest deferral under pressure (Q7)
 
-**Layout gate: PASS** — proceed to PRD without re-grill.
+The Linear ticket explicitly asks to "maintain version history so users can compare and revert." The agent recommended a `concept_versions` table with a version rail. **Operator answer:** **None** — latest brief only in MVP. → **D7 locked**, with an explicit ⚠️ flag that the ticket requirement is **DEFERRED** to PRD non-goals.
 
-#### Gallery
+A weaker agent would have silently dropped the requirement or over-built. Here the deferral is logged, traceable, and visible in the PRD resume — exactly what a skeptical PM wants to see.
+
+### Other locked decisions (summary)
+
+| ID | Decision | Why it mattered |
+|----|----------|-----------------|
+| D3 | `CreativeProvider` adapter; SeedProvider fixtures drive demo; ForeplayProvider coded but **off** | De-risks build — no live API on hot path |
+| D4 | New **Library** nav → `/library` gallery; select → **Concept Workspace** `/library/[id]` | Distinct surfaces; avoids cramming gallery into global chat |
+| D5 | Adapt to **active brand** from TopBar switcher; block-with-picker if none; gallery brand-agnostic | Reuses global brand context |
+| D6 | **Auto-run adaptation once** on workspace open; explicit Re-adapt | Avoids dead-end empty workspace |
+| D8 | Curation MVP = **Save + Hide** only; tagging deferred | Matches gallery-first chop |
+| D9 | Generate Variants → campaign/session → concept_executor → surgical_edit → navigate **`/review`** | Zero net-new variant UI; lineage via `parent_concept_id` |
+
+Full Q&A transcript: [`artifacts/grill-log.md`](artifacts/grill-log.md).
+
+---
+
+## Flow walkthrough (plain English)
+
+The Mermaid diagrams in [`artifacts/flows.md`](artifacts/flows.md) describe two journeys.
+
+### Happy path (8 steps)
+
+1. Operator opens **Library** (new nav item) and sees a grid of proven ad creatives from SeedProvider fixtures.
+2. They search and filter by vertical, niche, platform, format, language, CTA, and creative angle — filters live in **URL query params** so views are shareable.
+3. They click a card and land on the **Concept Workspace** at `/library/[creativeId]`.
+4. If no brand is active, an inline **brand picker** blocks the workspace until one is chosen.
+5. Adaptation **auto-runs once**: reference metadata + Brand DNA → synthesized brief via `concept_from_brief` + `load_brand()`. A skeleton shows during loading.
+6. The operator refines the brief through the **existing chat rail** on the right ("make the CTA punchier," etc.).
+7. Satisfied, they click **Generate Variants**.
+8. The system creates a campaign+session, renders the concept, enqueues `surgical_edit`, and navigates to the existing **`/review`** surface where variants stream in.
+
+### Error and empty branches
+
+The flow diagram also covers paths a lay reader cares about:
+
+- **Empty gallery** or provider fetch failure → retry / offline saved-concepts fallback
+- **No filter results** → clear-filters CTA back to grid
+- **No active brand** → inline picker (not a dead end)
+- **Adaptation error** → error state in brief pane with Retry
+- **Variant enqueue failure** → toast; operator stays in workspace
+
+A separate curation sub-flow covers **Save** (badge + Saved filter) and **Hide** (removed from default grid; undo via Hidden filter).
+
+---
+
+## Interaction design — options considered and why the pick wins
+
+For each key step, the flows doc records 2–3 options and a recommendation. These aren't decorative — they document **IA and app-logic reasoning**.
+
+### Gallery browse (4.1)
+
+- **A (pick):** Responsive card grid — thumbnail, brand, format/platform badges, one-line summary, hover Save/Hide. Click → workspace.
+- B: Dense table with side preview.
+- C: Masonry with inline video autoplay.
+
+**Why A wins:** Matches existing shadcn card patterns in `studio/components/gallery/`. Scannable, cheap to build, appropriate density for ~20–40 seed creatives.
+
+### Search + filter (4.2)
+
+- **A (pick):** Left facet sidebar + top keyword search; filters as URL params.
+- B: Top filter bar with dropdown popovers.
+- C: Command-palette search only.
+
+**Why A wins:** URL-param facets fit App Router patterns already used by `/review?view=`. Supports deep links and back-button safety — important when operators share "SaaS + Meta + 9:16" filtered views.
+
+### Workspace layout (4.3)
+
+- **A (pick):** Two-pane — left: reference creative stacked above adapted brief; right: chat rail. Brief as labeled sections (Hook, Core message, Visual direction, Layout, CTA, Copy, Rationale).
+- B: Tabs (Reference | Brief | Chat).
+- C: Collapsible reference header.
+
+**Why A wins:** Keeps the **source ad visible** while refining — core to the "adapt from proven creative" mental model. Reuses existing `ChatRail` without net-new chat UI.
+
+### Refinement (4.4)
+
+- **A (pick):** Existing global chat rail scoped to this concept's session.
+- B: Structured form fields per brief section.
+- C: Hybrid chat + quick-action chips.
+
+**Why A wins:** Leverages production SSE chat stack. Option C's chips (Tone, CTA, Format) were noted as a cheap enhancement — the wireframe includes them.
+
+### Generate Variants handoff (4.5)
+
+- **A (pick):** Primary CTA in workspace header → create campaign+session → render → enqueue → toast + auto-navigate to `/review`.
+- B: Embed variant results strip in workspace (net-new UI).
+- C: Open `/review` in new tab.
+
+**Why A wins:** Reuses `/review` entirely. Clear "you've left concept work, go watch variants cook" transition. Preserves lineage via `parent_concept_id`.
+
+---
+
+## Wireframe review — screenshots and echo-studio fidelity
+
+Pencil MCP was **unavailable** in this run. The agent used the sanctioned fallback: HTML wireframes → headless Chromium PNGs. Fidelity is **structural**, not brand-polished — appropriate for a layout gate before PRD.
+
+### Screen 1 — Creative Library gallery
 
 ![Creative Library gallery](artifacts/screenshots/01-gallery.png)
 
-*Facet sidebar, 4-up card grid, Save/Hide, provider provenance line. Validates D3, D4, D8.*
+*Facet sidebar (All/Saved/Hidden, Vertical, Platform, Format, Creative angle), 4-up card grid, Save/Hide affordances, provider provenance line ("SeedProvider · Foreplay off · 34").*
 
-**Critique:** Card density and filter facet set are reasonable. "Foreplay adapter available, off" caption correctly signals demo path. I'd want real thumbnail aspect ratios in build, but wireframe fidelity is appropriate here.
+**What this proves:** D3 (seed-driven demo), D4 (Library as primary nav), D8 (Save/Hide curation), interaction picks 4.1 and 4.2.
 
-#### Concept Workspace
+**Fidelity vs echo-studio:**
+
+| Element | Wireframe | Real product | Match? |
+|---------|-----------|--------------|--------|
+| Primary nav | Studio · Review · **Library** · Campaigns · Brand DNA | `TopBar.tsx`: Studio, Review, Campaigns, Brand DNA (no Library yet) | **Extension** — correct insertion point in pill nav |
+| Brand switcher | "(Deel ▾)" in header | `BrandSwitcher` Button with label + caret | ✅ Pattern match |
+| Card grid | 4-up with badges | `studio/components/gallery/` card patterns | ✅ Density reasonable |
+| Filter sidebar | Left facets | No existing library filters (net-new) | N/A — new surface |
+| Design tokens | Grayscale boxes | `globals.css` LoudEcho V2 (neutral + brand-blue accent) | ⚠️ Build must apply tokens |
+
+### Screen 2 — Concept Workspace
 
 ![Concept Workspace](artifacts/screenshots/02-concept-workspace.png)
 
-*Reference + adapted brief (left), chat rail (right), Generate Variants CTA.*
+*Two-pane: reference creative + source metadata above adapted brief (Hook, Core message, Visual direction, Layout, CTA, Copy, Rationale); chat rail with quick-action chips; header with ← Library, Re-adapt, Generate Variants →.*
 
-**Critique:** Two-pane layout matches D4/D6. Version rail correctly absent (D7 deferred). Quick-action chips reuse ChatPane patterns — good. Minor nit: watermark overlaps Send row (noted in mockup notes, non-blocking).
+**What this proves:** D2/D4 (dedicated route, reuse ChatPane), D5 (target brand "Deel" in header), D6 (auto-adapted v1 brief), D9 (persistent Generate Variants CTA).
 
-#### Key states
+**Fidelity vs echo-studio:**
+
+| Element | Wireframe | Real product | Match? |
+|---------|-----------|--------------|--------|
+| Two-pane + chat rail | Left content, right chat | `AppShell` + `ChatPane` pattern | ✅ Core layout matches |
+| Chat quick-action chips | Tone, Audience, Visual style… | ChatPane exists; chips are enhancement | ⚠️ Chips not in prod yet — cheap add |
+| Generate Variants CTA | Header primary button | No equivalent today (new action) | N/A — new glue |
+| Version rail | Absent (v1 tag only) | N/A — D7 deferred | ✅ Intentionally omitted |
+
+### Screen 3 — Key states
 
 ![Key states](artifacts/screenshots/03-key-states.png)
 
-*No-brand picker, adaptation skeleton, empty/error gallery.*
+*No active brand → inline brand picker; adaptation loading skeleton; gallery empty-results; provider fetch error with Retry.*
 
-**Critique:** Covers the states that would otherwise become mid-build Slack threads. Error state with "offline saved concepts" fallback is thoughtful.
+**What this proves:** D5 (brand block), D6 (loading skeleton), error/empty coverage from flows §5.
 
-### PRD
+**Layout gate verdict:** **PASS** — all screens render coherently at 1440px. Proceed to PRD without re-grill. Nits: faint watermark overlaps chat Send row; annotation labels are wireframe-only.
 
-See [`artifacts/prd-resume.md`](artifacts/prd-resume.md) for the condensed spec.
-
-**Strengths:**
-
-- 10 acceptance criteria, each traceable to a grill decision
-- Explicit **out of scope** (Foreplay on hot path, version history, tagging, multi-brand fan-out)
-- **Contract honesty:** additive echo-studio schema only; no LoudEcho adtech contract touch
-- Implementation plan phases: migration → providers → API → UI → glue
-
-**Concerns:**
-
-1. **Scope vs ticket:** Version history explicitly deferred (D7) — correct process, but PM must acknowledge ticket mismatch
-2. **Open questions block build sequencing:**
-   - Hand-author ~20–40 seed fixtures? (Rec: yes)
-   - Adaptation via concept_from_brief pattern? (Rec: yes)
-   - All 10 ACs vs P1 gallery first? (Rec: **P1 first**)
-3. **Risk:** Additive libSQL migration on manual-migration discipline — PRD calls this out; eng must test locally first
+Mock notes: [`artifacts/mockup-notes.md`](artifacts/mockup-notes.md).
 
 ---
 
-## Gaps & risks
+## PRD resume (key sections)
 
-| Gap | Severity | Notes |
-|-----|----------|-------|
-| Pencil unavailable | Low | HTML fallback worked; install Pencil MCP for next runs |
-| Version history deferred | Medium (product) | Ticket asked for it; logged as non-goal — PM sign-off needed |
-| Large grilled scope | Medium (process) | 9 decisions + 10 ACs + multi-phase impl — recommend P1-first build |
-| Linear proof-of-work | Low | Case study artifacts not posted back to Linear yet |
-| No build metrics | N/A yet | Can't measure rework reduction until ship |
+From [`artifacts/prd-resume.md`](artifacts/prd-resume.md):
 
----
+### What
 
-## Build readiness
+A new **Creative Library** in echo-studio: browse/search proven ad creatives → select one → LoudEcho **adapts it to a target brand's DNA** → refine in chat → **Generate Variants** hands it to the existing variant workflow. Net-new = Library + glue; concept-gen, chat, Brand DNA, and variant generation are reused.
 
-| Question | Answer |
-|----------|--------|
-| Ready to build? | **Yes**, after PRD approval + open-question call |
-| Recommended build order | P1 gallery (AC 1–3) → workspace glue (AC 4–8) → states (AC 9) → Foreplay stub (AC 10) |
-| Design gate | Required before PR — load design skill stack + design-reviewer PASS |
-| Contract risk | Low–Medium — additive only |
+### Why
 
----
+Concept ideation today is manual and disconnected from variant generation. This turns market-proven ads into a first-class, brand-adaptable input layer for the existing engine.
 
-## Lessons for next run
+### Acceptance criteria (locked)
 
-1. **Grill P1 only** unless PM explicitly wants full-stack spec in one session
-2. **Install Pencil MCP** before mock step — wireframe fallback is acceptable but slower and less design-system-aligned
-3. **Post proof-of-work to Linear** after each pipeline step (workflow step 7)
-4. **Keep reuse discovery in grill** — D2 saved significant scope
-5. Compare against [`ENG1410-Skill-Test`](../tree/ENG1410-Skill-Test) when skill-variant experiment runs
+1. Library nav → `/library` gallery from `CreativeProvider` (SeedProvider default).
+2. Cards: thumbnail, brand, format+platform badges, summary, metadata tags, **Save / Hide**.
+3. Facet sidebar + keyword search; **filters in URL**.
+4. Select → Concept Workspace `/library/[id]`: reference + brief (left), chat rail (right), **Generate Variants** CTA.
+5. No active brand → inline **brand picker**; else adapt to **active brand**.
+6. **Auto-adapt once** (skeleton) → brief sections; explicit **Re-adapt**.
+7. Chat refines brief (reuse ChatPane); quick-action chips for common edits.
+8. **Generate Variants** → campaign/session → render concept → surgical_edit → navigate to `/review`.
+9. Empty / loading / error states handled.
+10. `ForeplayProvider` coded but **flagged off**; SeedProvider fixtures drive demo.
 
----
+### Out of scope (honest deferrals)
 
-## What worked / what failed
+- Live Foreplay on demo path
+- **Concept version history / compare / revert** (ticket req — explicitly deferred)
+- Free-form tagging; LoudEcho-owned curated galleries
+- Multi-brand fan-out; any new variant UI
+- Any dara-backend / adtech contract change
 
-| ✅ Worked | ❌ Failed / friction |
-|-----------|---------------------|
-| Codebase grounding before Q&A | Pencil MCP unavailable |
-| Provider adapter + seed fixtures pattern | Grilling "all" produced large PRD |
-| Traceable AC ↔ grill decision mapping | Linear sync not completed |
-| HTML wireframe layout gate | No build yet — can't validate rework savings |
-| Honest deferrals in grill + PRD | |
+### Open questions (pre-build)
+
+1. OK to hand-author ~20–40 seed fixtures? _(Rec: yes)_
+2. Adaptation via `concept_from_brief` contextualize-spawn pattern? _(Rec: yes)_
+3. Build all 10 ACs or **P1 gallery first** then glue? _(Rec: P1 first)_
 
 ---
 
-*Control arm baseline for ENG-1410. Skill-variant comparison: see `ENG1410-Skill-Test` branch (placeholder).*
+## What the agent got right — and wrong
+
+### Right
+
+- **Codebase-first grilling.** Reading TopBar, ChatPane, concept_executor, and surgical_edit before Q2 prevented a spec that rebuilds existing systems.
+- **Decision traceability.** Every AC in the PRD resume cites D1–D9. A builder can grep the grill log and know *why* each requirement exists.
+- **Honest scope deferrals.** D7 (version history) and D8 (tagging) are logged as ticket gaps, not silently dropped.
+- **SeedProvider de-risk.** D3 makes the demo deterministic without blocking on Foreplay API keys.
+- **Layout gate discipline.** Mock notes declare PASS/FAIL explicitly; no pixel debate leaked into the grill.
+
+### Wrong / weak
+
+- **D1 scope inflation.** Grilling "all" produced a medium-large PRD for a ticket that should build P1-first. MVP stop rules helped, but the operator had to later re-chop in the open questions.
+- **No sequence diagram for variant handoff.** D9 is text-only in flows — minor gap for engineers wiring campaign/session creation.
+- **Wireframes not token-styled.** Acceptable for layout gate, but the updated agent prompt now requires reading `globals.css` and component patterns **before** wireframing to reduce build-time visual delta.
+- **Steps 5–7 not run.** No build, no design-review gate, no Linear proof-of-work — this case study evaluates **planning artifacts only**.
+
+---
+
+## Critique verdict — is grill-before-build superb or subpar?
+
+**Grade: B+ / strong with conditions.**
+
+**Evidence for "strong":**
+
+- The grill log alone would save a builder days of "wait, do we rebuild chat?" confusion.
+- Flows + interaction matrices document *reasoning*, not just screens.
+- PRD acceptance criteria are testable and mapped to decisions.
+- Wireframes validated IA extension (Library nav, two-pane workspace) against real TopBar/AppShell patterns.
+
+**Evidence for "not superb yet":**
+
+- Pencil unavailable forced grayscale HTML fallback — layout-valid but not design-system-faithful.
+- Full-ticket grill (D1) created unnecessary PRD bulk; workflow prompt should default to P1-only unless operator opts in.
+- No built UI to compare wireframe → shipped fidelity (planning-phase only).
+
+**Would I approve this PRD and start build?** **Yes — P1 first**, after resolving the three open questions in prd-resume. I would not attempt all 10 ACs in one pass.
+
+---
+
+## Ratings
+
+| Dimension | Score (1–5) | Evidence |
+|-----------|:-----------:|----------|
+| **Clarity added before build** | **4** | D2 reframe + 9 locked decisions eliminate major ambiguity; open questions are explicit |
+| **Grounding in design skill stack / IA / app logic** | **4** | TopBar nav extension, ChatPane reuse, `/review` handoff all match real echo-studio; wireframes structural not token-polished |
+| **UX best practices / approach quality** | **4** | 2–3 options + pick pattern on 5 interactions; error/empty branches in Mermaid; Save/Hide curation sub-flow |
+| **Build readiness** | **3** | PRD is buildable but scope is large; P1-first chop recommended; Foreplay/seed/content questions open |
+| **Overall workflow grade** | **4** | Strong planning pipeline; Pencil gap and D1 scope inflation prevent a 5 |
+
+---
+
+## Appendix — artifact index
+
+| Artifact | Path | Purpose |
+|----------|------|---------|
+| Grill log | [`artifacts/grill-log.md`](artifacts/grill-log.md) | D1–D9 Q&A transcript + locked decisions |
+| Flows & interactions | [`artifacts/flows.md`](artifacts/flows.md) | Mermaid journeys + interaction option matrices |
+| Mockup notes | [`artifacts/mockup-notes.md`](artifacts/mockup-notes.md) | Wireframe validation + layout gate verdict |
+| PRD resume | [`artifacts/prd-resume.md`](artifacts/prd-resume.md) | Shape Up summary + 10 ACs |
+| Screenshots | [`artifacts/screenshots/`](artifacts/screenshots/) | 01-gallery, 02-concept-workspace, 03-key-states |
+| Full PRD | LoudEcho monorepo: `echo-studio/docs/tasks/gavri/ENG-1410-creative-library/prd.md` | Not duplicated on this branch |
+
+---
+
+*This case study critiques **agent output quality**, not whether a Creative Library is the right product bet. Planning-phase audit only — no implementation on this branch.*

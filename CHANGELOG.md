@@ -23,6 +23,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Pencil MCP was unavailable in both runs; HTML wireframe fallback used
 - Build, design review, and Linear proof-of-work steps not yet executed
 
+## [0.3.1] — 2026-07-01
+
+### Added
+
+- README §7 — **Pull latest target repo first**: explicit `dara-front` `staging` pull before Claude Code grill/mock/build; PRD-only is insufficient for LoudEcho-faithful UI
+
 ## [0.3.0] — 2026-07-01
 
 ### Added

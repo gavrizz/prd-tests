@@ -141,10 +141,41 @@ git push -u origin ENGxxxx-YourVariant
 
 Anthropic’s **Claude Design** (beta) is a separate surface for on-brand visual work, synced with **Claude Code** for implementation. Useful if you prefer browser/desktop design canvas over Paper-in-Cursor.
 
+#### Pull latest target repo first (required)
+
+**Yes — pull latest `dara-front` (or `echo-studio` for studio tickets) before every Claude Code run.** A PRD or case study alone is not enough for LoudEcho-faithful mocks or build.
+
+Claude learns UI from the workspace, not from memory. Without current code it will invent generic admin UI (what went wrong on Control runs).
+
+```bash
+cd loudecho
+git pull
+
+# dara-front tickets — merge target is staging
+cd dara-front
+git fetch origin
+git checkout staging
+git pull origin staging
+
+# echo-studio tickets — merge target is main
+# cd ../echo-studio && git fetch && git checkout main && git pull
+
+cd ../loudecho-brain && git pull
+```
+
+| Phase | Need latest repo? | Why |
+|-------|-------------------|-----|
+| Grill + flows + PRD | **Yes** | Ground reuse vs net-new in real screens |
+| Mocks / draft UI | **Yes** | Match tabs, forms, banners, component catalog |
+| Build | **Yes** — feature branch off `staging` / `main` | Ship what matches the product today |
+
+Open the **`loudecho`** workspace root in Claude Code (not `prd-tests` alone). Optional: `cd dara-front && npm run storybook` → `:6006` for visual reference.
+
 | Step | Where | Action |
 |------|--------|--------|
+| **Prep** | Terminal | Pull `staging` / `main` on target repo + `loudecho-brain` (see above) |
 | Design | [claude.ai/design](https://claude.ai/design) or Claude **desktop app sidebar** | Create mockups, decks, prototypes |
-| Import design system | Claude Design settings | Connect **GitHub repo** (loudecho / dara-front) so Claude uses your components & tokens |
+| Import design system | Claude Design settings | Connect **GitHub repo** (`dara-front` / `echo-studio`) so Claude uses your components & tokens |
 | Sync from code | Claude Code terminal | `/design-sync` — pull design system from codebase into Claude Design |
 | Start from code | Claude Code | `/design` — create/edit design projects from terminal |
 | Handoff to build | Claude Design → Export | **Handoff to Claude Code** — bundle includes tokens, layout intent, component structure |
@@ -152,8 +183,9 @@ Anthropic’s **Claude Design** (beta) is a separate surface for on-brand visual
 
 **LoudEcho-specific tips:**
 
-- Import **dara-front** (or echo-studio) as the design-system source in Claude Design so mocks stay on-brand.
-- Point Claude at `loudecho-brain/.agent/skills/loudecho-brand/DESIGN.md` and `components.md` in the handoff brief.
+- Import **dara-front** (or echo-studio) as the design-system source in Claude Design so mocks stay on-brand — use the **same branch** you pulled (`staging` / `main`).
+- Point Claude at `loudecho-brain/.agent/skills/loudecho-brand/DESIGN.md` and `loudecho-component-library/components.md` in the handoff brief.
+- Agent rule: **read real screens + Storybook paths from `components.md` before any mock** — PRD-only is insufficient.
 - After Claude Code builds, push to GitHub → normal LoudEcho PR + design-reviewer gate still applies.
 
 Claude Design shares usage limits with Claude Code (Pro/Max/Team). Enterprise may need admin enable.
@@ -161,6 +193,7 @@ Claude Design shares usage limits with Claude Code (Pro/Max/Team). Enterprise ma
 ### 8. Second machine checklist
 
 - [ ] Clone `loudecho` + `prd-tests`
+- [ ] **Pull latest `dara-front` `staging`** (or `echo-studio` `main`) + `loudecho-brain` before any Claude Code / mock / build run
 - [ ] Cursor: same account (Settings Sync optional for user rules)
 - [ ] Symlink/copy skills from `loudecho-brain` → `.cursor/skills/`
 - [ ] Copy `loudecho/.cursor/mcp.json`; re-auth Linear + GitHub

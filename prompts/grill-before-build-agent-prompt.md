@@ -17,6 +17,16 @@ TICKET: ENG-___
 
 You are running the LoudEcho grill-before-build workflow for the ticket above.
 
+## prd-tests mode: standalone prototype slice
+
+**This run produces a sliced interactive prototype — not full dara-front.**
+
+- **Scope the slice:** only the screens and states needed for *this* feature's journey. Document **in scope / out of scope** in `prototype/README.md` (e.g. new Threads UI → no Reports, no Campaigns list).
+- **UI reference:** pull **tokens + specific components** from `dara-front` (`components.md`, Storybook) — do not boot or mock the entire dashboard.
+- **echo-studio:** API/backend contracts and stub responses only — not studio app UI.
+- **Deliverable:** runnable `prototype/` (Claude Code mini-app, Claude Design handoff, or Paper) + screenshots + PRD describing how devs merge into `dara-front` later.
+- **Like Figma, but interactive in Claude first** — devs integrate the slice into production; the prototype repo/branch is showcase + spec, not the ship target.
+
 ## On start — you derive everything from the ticket
 1. Fetch the ticket via **Linear MCP** (title, description, comments, labels, project)
 2. Infer **repo** from ticket content/labels (ask me only if ambiguous)
@@ -75,20 +85,23 @@ decisions locked · open questions · re-grill trigger (what would invalidate th
 ## Workflow
 
 ### 0. Setup
-- Fetch ticket · create branch + `docs/tasks/<branch_name>/case-study/screenshots/`
+- Fetch ticket · create branch + `case-study/` + `prototype/` dirs
+- `prototype/README.md` — slice boundary (what's in / out of this prototype)
 - Linear comment: "Case study started — artifacts on `<branch>`"
 
 ### 1. Grill (`grill-me-product` + MVP rules)
 → `case-study/01-grill-log.md`
 
-### 2. Flows + key interactions (MVP only)
-- Mermaid: entry → branches → error/empty/success → exit
+### 2. Flows + key interactions (MVP slice only)
+- Mermaid: entry → branches → error/empty/success → exit **for this slice only**
 - 2–3 interaction options per **key** step + recommendation
 → `case-study/02-flows-and-interactions.md`
 
-### 3. Mock / wireframe phase (UI features) — MANDATORY UX READ FIRST
+### 3. Standalone prototype slice (UI features) — MANDATORY UX READ FIRST
 
-**Paper / Pencil / HTML all follow the same design VP as build.** Load the design skill stack before any mock surface.
+Build a **runnable interactive slice**, not full dara-front. Only the chrome needed to understand entry context (e.g. one tab + panel, not entire Campaigns product).
+
+**Paper / Pencil / HTML / Claude Code mini-app all follow the same design VP on the slice.** Load the design skill stack before any surface.
 
 **Design skill stack (MANDATORY before any mock):**
 `build-screen` → `loudecho-brand` → `loudecho-component-library` → `impeccable` → `frontend-design`
@@ -103,7 +116,13 @@ decisions locked · open questions · re-grill trigger (what would invalidate th
 | **echo-studio** | **API/backend only** — executors, providers, DB shapes, glue endpoints | Do not copy `studio/` app UI for mocks |
 | **loud-echo-site** | Marketing pages only | `loudecho-brand` + `frontend-design` |
 
-**Mock tool priority:**
+**Slice rules:**
+- List **out of scope** explicitly in `prototype/README.md` (pages/features not built, not stubbed)
+- Import only components this slice needs from dara-front catalog
+- Stub data / fake APIs — enough to demo happy path + key error/empty states
+- Minimum chrome: e.g. Optimize tab → thin tab strip + Optimize panel, not full campaign Overview
+
+**Mock tool priority (for the slice):**
 1. **Paper MCP** (preferred) — product-faithful mocks using real tokens from `loudecho-brand/DESIGN.md` or repo CSS; reference Storybook story names from `components.md`
 2. **Pencil MCP** — if available
 3. **HTML + Chromium PNG** — only if Paper/Pencil unavailable; MUST use repo Tailwind classes/tokens from codebase read, NOT generic gray monospace wireframes
@@ -121,20 +140,21 @@ decisions locked · open questions · re-grill trigger (what would invalidate th
 - Screenshots must look like they **belong in the product**
 - Layout broken → back to step 1 (re-grill), not pixel-tweak in chat
 
-**HARD GATE:** Low-fi gray wireframes alone do NOT pass layout gate. Mocks must use **dara-front** design language. "Apply brand at build time" is NOT valid in this workflow.
+**HARD GATE:** Low-fi gray wireframes alone do NOT pass. Slice must use **dara-front** design language on the screens in scope.
 
-→ `case-study/03-mockup-notes.md` + source (Paper file / HTML) + screenshots
+→ `case-study/03-mockup-notes.md` + `prototype/` source + `case-study/screenshots/`
 
-### 4. Write PRD (after flows + mock settled)
+### 4. Write PRD (after flows + prototype slice settled)
 - `prd.md` + `prd-resume.md` (session-workflow format)
+- Include **merge notes:** how devs pull this slice into `dara-front` (components, route, tab wiring)
 - Include **Shape Up pitch sections:** Problem · Appetite · Solution · Rabbit holes · No-gos
 - Target **≤3000 words** for MVP; split modules if longer
 - Reference flows, mocks, screenshots by path
 
 **Stop:** "PRD ready — approve?" No build until I approve.
 
-### 5. Build from PRD
-- Fresh pass; PRD only source of truth · design stack for UI
+### 5. Dev merge into dara-front (separate session — not this prototype run)
+- Fresh pass; PRD + prototype as source of truth · integrate into `dara-front` `staging`
 → `case-study/04-build-notes.md`
 
 ### 6. Design review → Ship

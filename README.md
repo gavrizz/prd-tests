@@ -6,6 +6,37 @@ This repo tests whether an agent workflow (grill → flows → mock → PRD) pro
 
 ---
 
+## Standalone prototype model *(prd-tests only)*
+
+**Each feature is a sliced interactive prototype — not a miniature dara-front.**
+
+Think **Claude interactive prototype first, Figma later, merge into dara-front last** — not “boot the whole dashboard so one tab works.”
+
+| Do | Don't |
+|----|--------|
+| Build **only the journey slice** for this ticket | Mount full app nav (Campaigns, Reports, Settings, …) unless the slice needs it |
+| Pull **tokens + specific components** from dara-front (`LineTabs`, `Sheet`, `Select`, banners) | Require every unrelated page to load or function |
+| Stub **just enough plumbing** (fake data, one tab, one panel) so the flow is clickable | Wire real Firebase, full campaign shell, or prod APIs for the prototype |
+| Use **echo-studio** only for API/backend contracts the slice needs | Use echo-studio UI as chrome |
+| Ship prototype in **`prototype/`** on the branch (or its own repo) | Block the experiment on integrating into monorepo first |
+
+**Example:** A new **AI chat / threads** feature → prototype shows thread list + composer + one thread view in LoudEcho styling. You do **not** need Reports, Campaigns list, or Insights working. Vice versa for an Optimize tab slice — show campaign context chrome **minimally** (e.g. tab strip + Optimize panel), not the entire campaign product.
+
+**Handoff to devs:** PRD + prototype + case study describe *what* to merge into `dara-front` `staging`. Devs pull components, patterns, and layout intent from the prototype — they do not copy-paste the standalone repo wholesale.
+
+```
+prd-tests branch (or feature prototype repo)
+├── README.md                 ← case study + verdict
+├── artifacts/                ← grill, flows, prd-resume, screenshots
+└── prototype/                ← runnable interactive slice (Claude Code / Claude Design)
+    ├── README.md             ← scope: what's in / out of this slice
+    └── …                     ← HTML, Next mini-app, or Claude Design handoff bundle
+```
+
+*This sliced-prototype rule applies to **prd-tests experiments** only — not the production VP merge path into dara-front.*
+
+---
+
 ## Setup & installation
 
 Use this section to reproduce the workflow on a **new machine** (Cursor, Claude Code, or both). Everything you need to copy-paste lives in this repo or links below.
@@ -95,7 +126,19 @@ npm run storybook    # http://localhost:6006
 
 **echo-studio (when needed):** pull for **API contracts, data models, and backend glue** — e.g. concept executor, surgical_edit, library providers. Do **not** use `studio/` UI as the mock chrome; render operator-facing flows in **dara-front** design language.
 
-### 5. Paper mocks — same design VP as build
+### 5. Standalone prototype (interactive slice)
+
+After flows are locked, build a **runnable slice** — not full dara-front:
+
+1. **Define the slice boundary** in `prototype/README.md` — entry point, screens in scope, explicit **out of scope** (e.g. “no Reports, no Campaign list”)
+2. **Import only needed UI** from dara-front — copy/token-import specific components or mirror Storybook patterns; use `components.md` to pick primitives
+3. **Stub data + plumbing** — enough to click through happy path + 1–2 key states
+4. **echo-studio** — mock API responses or read contracts only; no need for live backend in the prototype
+5. Prefer **Claude Code** or **Claude Design** for the interactive artifact; export/screenshot into `artifacts/screenshots/`
+
+The slice must **look** like LoudEcho (dara-front tokens) but **be** independently runnable and showcaseable.
+
+### 6. Paper / Claude Design mocks — design VP on the slice
 
 Paper is **not** a freeform wireframe tool in this workflow. It follows the **same design ops as implementation**:
 
@@ -110,7 +153,7 @@ Paper is **not** a freeform wireframe tool in this workflow. It follows the **sa
 
 Paper plugin: install `paper-desktop` Cursor plugin if not present. Ensure Paper Desktop is running with a file open before the agent calls Paper MCP.
 
-### 6. Launch a case study (Cursor) — copy/paste
+### 7. Launch a case study (Cursor) — copy/paste
 
 1. Open **loudecho** workspace in Cursor (fresh agent chat).
 2. Open [`prompts/grill-before-build-agent-prompt.md`](prompts/grill-before-build-agent-prompt.md).
@@ -138,7 +181,7 @@ git checkout -b ENGxxxx-YourVariant
 git push -u origin ENGxxxx-YourVariant
 ```
 
-### 7. Claude Code + Claude Design (alternative path)
+### 8. Claude Code + Claude Design (alternative path)
 
 Anthropic’s **Claude Design** (beta) is a separate surface for on-brand visual work, synced with **Claude Code** for implementation. Useful if you prefer browser/desktop design canvas over Paper-in-Cursor.
 
@@ -194,7 +237,7 @@ Open the **`loudecho`** workspace root in Claude Code. Optional: `cd dara-front 
 
 Claude Design shares usage limits with Claude Code (Pro/Max/Team). Enterprise may need admin enable.
 
-### 8. Second machine checklist
+### 9. Second machine checklist
 
 - [ ] Clone `loudecho` + `prd-tests`
 - [ ] **Pull latest `dara-front` `staging`** + `loudecho-brain` before every run
@@ -207,7 +250,7 @@ Claude Design shares usage limits with Claude Code (Pro/Max/Team). Enterprise ma
 - [ ] Paste agent prompt from this repo; set `TICKET`
 - [ ] Publish case study branch to `gavrizz/prd-tests` when done
 
-### 9. Quick links
+### 10. Quick links
 
 | Resource | URL |
 |----------|-----|
@@ -263,18 +306,18 @@ Scores appear at the end of every branch case study.
 flowchart LR
     A[Linear ticket] --> B[Grill Q&A]
     B --> C[Flows + interactions]
-    C --> D[Wireframe mock]
+    C --> D[Standalone prototype slice]
     D --> E[PRD]
-    E --> F[Build — separate session]
+    E --> F[Dev merge into dara-front]
 ```
 
 **Pipeline steps:**
 
 1. **Grill** — structured Q&A locks product decisions (`grill-me-product` skill + MVP stop rules)
-2. **Flows** — Mermaid diagrams + interaction option matrices (logic only, no pixel debate)
-3. **Mock** — low-fi wireframes (Pencil or HTML fallback) → PNG screenshots; must extend existing repo IA
-4. **PRD** — Shape Up structure with acceptance criteria traceable to grill decisions
-5. **Build** — intentionally out of scope for control-arm branches (planning-phase audits)
+2. **Flows** — Mermaid diagrams + interaction option matrices for **this slice only**
+3. **Prototype** — interactive runnable slice (Claude Code / Claude Design / Paper); **dara-front tokens + only the components needed**; not full app shell
+4. **PRD** — Shape Up structure; notes how devs merge prototype into `dara-front`
+5. **Dev merge** — separate session; out of scope for planning-only case study branches
 
 Agent prompt: [`prompts/grill-before-build-agent-prompt.md`](prompts/grill-before-build-agent-prompt.md) (also in LoudEcho monorepo at `docs/case-studies/grill-before-build-agent-prompt.md`).
 
@@ -317,12 +360,15 @@ Creative Optimization Simulation. Eight locked decisions + Q9 default, new Optim
 ```
 ENGxxxx-Variant/
 ├── README.md              ← case study (start here)
-└── artifacts/
-    ├── grill-log.md
-    ├── flows.md
-    ├── mockup-notes.md
-    ├── prd-resume.md
-    └── screenshots/*.png
+├── artifacts/
+│   ├── grill-log.md
+│   ├── flows.md
+│   ├── mockup-notes.md
+│   ├── prd-resume.md
+│   └── screenshots/*.png
+└── prototype/             ← optional: runnable interactive slice
+    ├── README.md          ← slice scope (in / out); how to run
+    └── …                  ← Claude Code / Design output
 ```
 
 Full PRDs remain in LoudEcho monorepo task directories; branches carry summaries and evidence only.

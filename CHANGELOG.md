@@ -23,6 +23,13 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Pencil MCP was unavailable in both runs; HTML wireframe fallback used
 - Build, design review, and Linear proof-of-work steps not yet executed
 
+## [0.3.2] — 2026-07-01
+
+### Changed
+
+- **UI reference = `dara-front` only** — `echo-studio` documented as API/backend for the creative engine, not a mock or design-system source
+- Agent prompt synced: mocks must use dara-front design language even when ticket integrates echo-studio APIs
+
 ## [0.3.1] — 2026-07-01
 
 ### Added

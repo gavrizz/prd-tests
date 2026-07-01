@@ -93,13 +93,15 @@ decisions locked · open questions · re-grill trigger (what would invalidate th
 **Design skill stack (MANDATORY before any mock):**
 `build-screen` → `loudecho-brand` → `loudecho-component-library` → `impeccable` → `frontend-design`
 
-**BEFORE any wireframe or mock screen**, read the target repo's existing UX so wireframes **extend IA, not invent unrelated UI**:
+**BEFORE any wireframe or mock screen**, read the target repo's existing UX so wireframes **extend IA, not invent unrelated UI**.
 
-| Repo | Read before wireframe | Storybook / catalog |
-|------|----------------------|---------------------|
-| **dara-front** | `SimulationMode/InputsPanel`, `SimulationModeCard`, `LineTabs`, campaign page tabs, `SimulatedGenerationsTable` | `npm run storybook` → :6006; routing table in `loudecho-brain/.agent/skills/loudecho-component-library/components.md` |
-| **echo-studio** | `TopBar`, `ChatPane`, `globals.css` tokens, `/review` `/campaigns` `/brand` | Read `studio/app/globals.css` + shell components |
-| **loud-echo-site** | `loudecho-brand` + `frontend-design`; existing page patterns | N/A |
+**UI reference rule:** **`dara-front` is the only design-system and mock chrome reference** (Storybook, `components.md`, tokens). **`echo-studio` is API/backend** (concept gen, variants, library providers) — pull it for integration and data contracts, **never** as the UI pattern source for mocks.
+
+| Repo | Read for | Storybook / catalog |
+|------|----------|---------------------|
+| **dara-front** | **All mocks and operator-facing UI** — tabs, forms, banners, tables, sheets | `npm run storybook` → :6006; `loudecho-brain/.agent/skills/loudecho-component-library/components.md` |
+| **echo-studio** | **API/backend only** — executors, providers, DB shapes, glue endpoints | Do not copy `studio/` app UI for mocks |
+| **loud-echo-site** | Marketing pages only | `loudecho-brand` + `frontend-design` |
 
 **Mock tool priority:**
 1. **Paper MCP** (preferred) — product-faithful mocks using real tokens from `loudecho-brand/DESIGN.md` or repo CSS; reference Storybook story names from `components.md`
@@ -119,7 +121,7 @@ decisions locked · open questions · re-grill trigger (what would invalidate th
 - Screenshots must look like they **belong in the product**
 - Layout broken → back to step 1 (re-grill), not pixel-tweak in chat
 
-**HARD GATE:** Low-fi gray wireframes alone do NOT pass layout gate for dara-front / echo-studio UI. "Apply brand at build time" is NOT valid in this workflow.
+**HARD GATE:** Low-fi gray wireframes alone do NOT pass layout gate. Mocks must use **dara-front** design language. "Apply brand at build time" is NOT valid in this workflow.
 
 → `case-study/03-mockup-notes.md` + source (Paper file / HTML) + screenshots
 

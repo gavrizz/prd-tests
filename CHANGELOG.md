@@ -23,6 +23,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Pencil MCP was unavailable in both runs; HTML wireframe fallback used
 - Build, design review, and Linear proof-of-work steps not yet executed
 
+## [0.2.1] — 2026-07-01
+
+### Removed
+
+- **ENG1410-Skill-Test** — placeholder branch removed (no experiment run was executed on this arm)
+
 ## [0.2.0] — 2026-07-01
 
 ### Changed

@@ -82,7 +82,6 @@ Agent prompt: [`prompts/grill-before-build-agent-prompt.md`](prompts/grill-befor
 |--------|--------|---------|--------|
 | [`ENG1410-Control`](tree/ENG1410-Control) | ENG-1410 Creative Library | Control arm | PLANNING complete |
 | [`ENG1409-Control`](tree/ENG1409-Control) | ENG-1409 Optimization Simulation | Control arm | PLANNING complete |
-| [`ENG1410-Skill-Test`](tree/ENG1410-Skill-Test) | ENG-1410 | Skill-variant experiment | Placeholder |
 
 ---
 
@@ -95,10 +94,6 @@ Ad Creative Library & Concept Generation. Nine locked decisions (D1–D9), reuse
 ### ENG1409-Control · dara-front
 
 Creative Optimization Simulation. Eight locked decisions + Q9 default, new Optimize tab on simulated campaigns, typed stub backend. **Verdict:** approve and build first. **Overall: 4/5.**
-
-### ENG1410-Skill-Test
-
-Reserved for a future run testing an alternate skill stack or prompt variant against the ENG1410-Control baseline.
 
 ---
 

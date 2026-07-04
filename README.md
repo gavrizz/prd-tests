@@ -131,6 +131,25 @@ All screenshots are **fresh captures of the running prototype** (`npm run dev`, 
 
 ---
 
+## UX fidelity vs dara-front — honest codebase comparison
+
+An honest comparison of the prototype against the real dara-front campaign-detail surface (the slice is a build-arm reproduction, so this is where it stands relative to production code):
+
+| Surface / behavior | Real dara-front | This prototype | Honest verdict |
+|--------------------|-----------------|----------------|----------------|
+| Campaign shell (sidebar + header) | `Sidebar.jsx`, campaign header w/ flight dates + budget | Reproduced from live screenshots; verbatim tokens | ✅ Faithful — reads as the real shell |
+| Tab strip | `TabMenu`/`LineTabs` underline pattern | Same underline + active token | ✅ Faithful; `Optimize` is a net-new tab slot |
+| Simulation isolation | Existing **Simulation Mode** components (`SimulationModeCard`, `InputsPanel`, `StatusPanel`) + banners | New Optimize loop reusing the same amber banner treatment + `SIM` labels | 🟦 Extension — sits adjacent to Simulation Mode; a dev should reconcile shared banner/config components at integration |
+| Drill-down | `Sheet` (right-anchored) used across dara-front | Same shadcn `Sheet` | ✅ Faithful |
+| Results table | `Table` primitive + `Badge` | Same primitives + checkbox column | ✅ Faithful |
+| Config inputs | `Select`, `Input`, segmented controls | Same primitives | ✅ Faithful |
+| Data | Real Firebase/Postgres campaign + bidder-adjacent simulation | Seeded fixtures via `engine.ts` (no network) | ⚠️ Illustrative — numbers are simulated, sourcing is demo |
+| Eligible-ad count | Real targeting query | Demo value | ⚠️ Lands at integration |
+
+**Bottom line:** chrome, tabs, Sheet, and tokens are production-faithful; the optimization *data* is illustrative by design (safety), and the Optimize loop should be reconciled with the existing `SimulationMode/` components during dev integration.
+
+---
+
 ## PRD resume (key sections)
 
 Full detail in [`prd-resume.md`](prd-resume.md); build detail in [`case-study/04-build-notes.md`](case-study/04-build-notes.md); design review in [`case-study/05-design-review.md`](case-study/05-design-review.md).

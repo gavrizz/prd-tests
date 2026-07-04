@@ -6,6 +6,22 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.0] — 2026-07-04
+
+### Added
+
+- **ENG1409-Claude** — first **build-arm** run: agent-built runnable interactive prototype slice for ENG-1409 (Creative Optimization Simulation), not planning-only.
+  - `prototype/` — Vite + React + TS + Tailwind mini-app using dara-front tokens + shadcn primitives; new `Optimize` tab on the campaign shell; full loop (Configure → staged converge-or-cap run → results → segment Sheet → bulk approve) over a client-side simulation engine (`engine.ts`).
+  - Simulation-safety framing: persistent isolation banner + `SIM` labels on every metric.
+  - `case-study/` — build notes, design review, 3 live screenshots (+ dara-front shell reference).
+  - `prd-resume.md` — PRD + merge notes for dara-front integration.
+  - `AUTH-BYPASS.md` — documents the env-gated local dev auth bypass added to dara-front `withAuth`.
+
+### Notes
+
+- Prototype verified: `npm run build` passes; all states captured live in-browser.
+- Engine is a deterministic client-side simulation with no network path — never touches the live bidder by construction.
+
 ## [0.1.0] — 2026-07-01
 
 ### Added

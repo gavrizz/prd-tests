@@ -6,6 +6,21 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.0] — 2026-07-04
+
+### Added
+
+- **ENG1410-Claude** — first **build-arm** run: agent-built runnable interactive prototype slice for ENG-1410 (Ad Creative Library & Concept Generation), not planning-only.
+  - `prototype/` — Vite + React + TS + Tailwind mini-app using dara-front tokens + shadcn primitives; full loop (Library gallery → Concept Workspace adapt/refine → streamed Variant Review) over a typed echo-studio-shaped backend seam (`api.ts`).
+  - `case-study/` — build notes, design review, 3 live screenshots (+ dara-front shell reference).
+  - `prd-resume.md` — PRD + merge notes for dara-front integration.
+  - `AUTH-BYPASS.md` — documents the env-gated local dev auth bypass added to dara-front `withAuth`.
+
+### Notes
+
+- Prototype verified: `npm run build` passes; all screens captured live in-browser.
+- Backend is stubbed (echo-studio contracts shaped in `types.ts`); integration is a separate dev pass.
+
 ## [0.1.0] — 2026-07-01
 
 ### Added

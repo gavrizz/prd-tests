@@ -6,6 +6,13 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.1] — 2026-07-04
+
+### Changed
+
+- **ENG1409-Claude** — rewrote `README.md` as a **senior PM/PD build-arm case study** matching the `ENG1409-Control` section format (metadata table, Executive summary, The bet, Session narrative, Flow walkthrough, Interaction design, Screenshot review + fidelity tables, PRD resume, Right/wrong, Critique verdict, Ratings, Appendix).
+- Added fresh **live in-browser screenshots** of the running prototype (configure, running, results, sheet, approved) captured via `npm run dev` on :5176.
+
 ## [0.5.0] — 2026-07-04
 
 ### Added
